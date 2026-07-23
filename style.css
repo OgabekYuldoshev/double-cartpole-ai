@@ -1,0 +1,160 @@
+/* style.css - Double CartPole AI loyihasi uchun UI uslublari */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
+    background: #0d0e12;
+    color: #dfe1e8;
+}
+
+.app {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.app-header h1 {
+    margin: 0 0 4px 0;
+    font-size: 22px;
+    font-weight: 600;
+    color: #f2f3f7;
+}
+
+.app-header .subtitle {
+    margin: 0 0 18px 0;
+    font-size: 13px;
+    color: #8a8f9c;
+}
+
+.app-main {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.canvas-holder {
+    background: #12141a;
+    border: 1px solid #23262f;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+}
+
+.canvas-holder canvas {
+    display: block;
+}
+
+.control-panel {
+    flex: 1;
+    min-width: 260px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.panel-block {
+    background: #15171f;
+    border: 1px solid #23262f;
+    border-radius: 10px;
+    padding: 14px 16px;
+}
+
+.panel-block h2 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #a9adba;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.btn {
+    display: block;
+    width: 100%;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    border: 1px solid #2c303c;
+    border-radius: 8px;
+    background: #1c1f28;
+    color: #dfe1e8;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.btn:hover {
+    background: #242835;
+}
+
+.btn.active {
+    background: #2a5a9e;
+    border-color: #3f79c8;
+    color: #ffffff;
+}
+
+.btn-secondary {
+    background: #241a1a;
+}
+
+.btn-secondary:hover {
+    background: #33201f;
+}
+
+.slider-label {
+    display: block;
+    margin-top: 12px;
+    margin-bottom: 6px;
+    font-size: 13px;
+    color: #c2c5d0;
+}
+
+input[type="range"] {
+    width: 100%;
+}
+
+.stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.stats-table td {
+    padding: 5px 0;
+    border-bottom: 1px solid #21242c;
+}
+
+.stats-table td:first-child {
+    color: #8a8f9c;
+}
+
+.stats-table td:last-child {
+    text-align: right;
+    font-family: 'Consolas', monospace;
+    color: #eef0f5;
+    font-weight: 600;
+}
+
+.legend-text {
+    font-size: 12px;
+    color: #9a9fac;
+    line-height: 2.1;
+}
+
+.legend-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.legend-dot.pole1 { background: rgb(255, 120, 100); }
+.legend-dot.pole2 { background: rgb(120, 255, 160); }
+.legend-dot.com { background: rgb(255, 210, 60); }
+.legend-dot.force { background: rgb(255, 90, 90); }

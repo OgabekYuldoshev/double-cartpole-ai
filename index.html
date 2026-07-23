@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Double CartPole AI &mdash; Reinforcement Learning (p5.js)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app">
+        <header class="app-header">
+            <h1>Double CartPole &mdash; Deep Q-Learning</h1>
+            <p class="subtitle">Noldan yozilgan fizika (Lagrange dinamikasi) + noldan yozilgan Neural Network</p>
+        </header>
+
+        <main class="app-main">
+            <section id="canvas-holder" class="canvas-holder"></section>
+
+            <aside class="control-panel">
+                <div class="panel-block">
+                    <h2>Boshqaruv</h2>
+                    <button id="training-toggle-btn" class="btn active">Training: ON</button>
+                    <button id="debug-toggle-btn" class="btn">Debug: OFF</button>
+                    <button id="reset-btn" class="btn btn-secondary">Reset</button>
+
+                    <label class="slider-label" for="speed-slider">
+                        Simulation Speed: <span id="speed-value">1x</span>
+                    </label>
+                    <input type="range" id="speed-slider" min="1" max="10" value="1" step="1">
+                </div>
+
+                <div class="panel-block">
+                    <h2>Statistika</h2>
+                    <table class="stats-table">
+                        <tr><td>FPS</td><td id="stat-fps">0</td></tr>
+                        <tr><td>Episode</td><td id="stat-episode">0</td></tr>
+                        <tr><td>Reward (joriy)</td><td id="stat-reward">0</td></tr>
+                        <tr><td>Reward (oxirgi episode)</td><td id="stat-last-reward">0</td></tr>
+                        <tr><td>Eng yaxshi Reward</td><td id="stat-best-reward">0</td></tr>
+                        <tr><td>Total Reward</td><td id="stat-total-reward">0</td></tr>
+                        <tr><td>Epsilon</td><td id="stat-epsilon">1.000</td></tr>
+                        <tr><td>Generation</td><td id="stat-generation">0</td></tr>
+                        <tr><td>Step Count</td><td id="stat-step">0</td></tr>
+                        <tr><td>Loss</td><td id="stat-loss">0</td></tr>
+                    </table>
+                </div>
+
+                <div class="panel-block">
+                    <h2>Izoh</h2>
+                    <p class="legend-text">
+                        <span class="legend-dot pole1"></span> Pole 1 (pastki tayoq)<br>
+                        <span class="legend-dot pole2"></span> Pole 2 (yuqori tayoq)<br>
+                        <span class="legend-dot com"></span> Massa markazi (Debug)<br>
+                        <span class="legend-dot force"></span> Kuch vektori (Debug)
+                    </p>
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <!-- Modullar to'g'ri bog'liqlik tartibida yuklanadi -->
+    <script src="utils.js"></script>
+    <script src="physics.js"></script>
+    <script src="cart.js"></script>
+    <script src="pole.js"></script>
+    <script src="renderer.js"></script>
+    <script src="network.js"></script>
+    <script src="replayBuffer.js"></script>
+    <script src="agent.js"></script>
+    <script src="trainer.js"></script>
+    <script src="sketch.js"></script>
+</body>
+</html>
