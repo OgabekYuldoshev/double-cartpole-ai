@@ -148,6 +148,8 @@ class CartPoleEnvironment {
 
 // ==================== TRAINER ====================
 
+const BEST_REWARD_STORAGE_KEY = 'doubleCartPole_bestEpisodeReward';
+
 class Trainer {
     /**
      * @param {DQNAgent} agent
@@ -163,7 +165,27 @@ class Trainer {
         this.episodeReward = 0;
         this.lastEpisodeReward = 0;
         this.totalReward = 0;
-        this.bestEpisodeReward = -Infinity;
+        this.bestEpisodeReward = this.loadBestReward();
+    }
+
+    /** localStorage'dan saqlangan best rewardni o'qiydi (topilmasa -Infinity) */
+    loadBestReward() {
+        try {
+            const saved = localStorage.getItem(BEST_REWARD_STORAGE_KEY);
+            const parsed = saved !== null ? parseFloat(saved) : NaN;
+            return Number.isNaN(parsed) ? -Infinity : parsed;
+        } catch (e) {
+            return -Infinity;
+        }
+    }
+
+    /** Joriy best rewardni localStorage'ga yozadi */
+    saveBestReward() {
+        try {
+            localStorage.setItem(BEST_REWARD_STORAGE_KEY, String(this.bestEpisodeReward));
+        } catch (e) {
+            // localStorage mavjud bo'lmasa yoki to'lib qolsa - jim o'tkazib yuboramiz
+        }
     }
 
     /**
@@ -185,7 +207,10 @@ class Trainer {
 
         if (done) {
             this.lastEpisodeReward = this.episodeReward;
-            this.bestEpisodeReward = Math.max(this.bestEpisodeReward, this.episodeReward);
+            if (this.episodeReward > this.bestEpisodeReward) {
+                this.bestEpisodeReward = this.episodeReward;
+                this.saveBestReward();
+            }
             this.episodeCount += 1;
             this.episodeReward = 0;
             this.currentState = this.environment.reset();
@@ -200,6 +225,11 @@ class Trainer {
         this.lastEpisodeReward = 0;
         this.totalReward = 0;
         this.bestEpisodeReward = -Infinity;
+        try {
+            localStorage.removeItem(BEST_REWARD_STORAGE_KEY);
+        } catch (e) {
+            // e'tiborsiz qoldiramiz
+        }
     }
 
     /** UI panel uchun joriy statistikalarni qaytaradi */
