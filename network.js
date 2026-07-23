@@ -252,6 +252,30 @@ class NeuralNetwork {
         copy.copyWeightsFrom(this);
         return copy;
     }
+
+    /** Tarmoqning to'liq holatini (og'irliklar + Adam momentlari) plain objectga chiqaradi */
+    getState() {
+        return {
+            weights: this.weights.map((W) => W.map((row) => row.slice())),
+            biases: this.biases.map((b) => b.slice()),
+            mWeights: this.mWeights.map((W) => W.map((row) => row.slice())),
+            vWeights: this.vWeights.map((W) => W.map((row) => row.slice())),
+            mBiases: this.mBiases.map((b) => b.slice()),
+            vBiases: this.vBiases.map((b) => b.slice()),
+            adamTimeStep: this.adamTimeStep
+        };
+    }
+
+    /** getState() natijasidan tarmoq holatini tiklaydi */
+    setState(state) {
+        this.weights = state.weights.map((W) => W.map((row) => row.slice()));
+        this.biases = state.biases.map((b) => b.slice());
+        this.mWeights = state.mWeights.map((W) => W.map((row) => row.slice()));
+        this.vWeights = state.vWeights.map((W) => W.map((row) => row.slice()));
+        this.mBiases = state.mBiases.map((b) => b.slice());
+        this.vBiases = state.vBiases.map((b) => b.slice());
+        this.adamTimeStep = state.adamTimeStep;
+    }
 }
 
 if (typeof module !== 'undefined' && module.exports) {

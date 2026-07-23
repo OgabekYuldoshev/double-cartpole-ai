@@ -39,6 +39,12 @@ const sketch = (p) => {
         p.frameRate(60);
 
         setupUIHandlers();
+
+        // Sahifa yopilishidan oldin joriy holatni saqlaymiz - episode oxirigacha
+        // kutmasdan, mid-episode holatda ham reload/tab close paytida yo'qotmaslik uchun
+        window.addEventListener('beforeunload', () => {
+            trainer.saveState();
+        });
     };
 
     p.draw = () => {

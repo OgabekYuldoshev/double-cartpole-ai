@@ -148,7 +148,7 @@ class CartPoleEnvironment {
 
 // ==================== TRAINER ====================
 
-const BEST_REWARD_STORAGE_KEY = 'doubleCartPole_bestEpisodeReward';
+const TRAINER_STORAGE_KEY = 'doubleCartPole_trainingState';
 
 class Trainer {
     /**
@@ -165,24 +165,47 @@ class Trainer {
         this.episodeReward = 0;
         this.lastEpisodeReward = 0;
         this.totalReward = 0;
-        this.bestEpisodeReward = this.loadBestReward();
+        this.bestEpisodeReward = -Infinity;
+
+        this.loadState();
     }
 
-    /** localStorage'dan saqlangan best rewardni o'qiydi (topilmasa -Infinity) */
-    loadBestReward() {
+    /**
+     * localStorage'da saqlangan holat bo'lsa, agent (tarmoqlar, epsilon, h.k.) va
+     * trainer statistikasini o'sha joydan tiklaydi. Reload qilinganda training
+     * boshidan boshlanmasin uchun shu funksiya constructor'da chaqiriladi.
+     * @returns {boolean} holat topilib tiklandimi
+     */
+    loadState() {
         try {
-            const saved = localStorage.getItem(BEST_REWARD_STORAGE_KEY);
-            const parsed = saved !== null ? parseFloat(saved) : NaN;
-            return Number.isNaN(parsed) ? -Infinity : parsed;
+            const raw = localStorage.getItem(TRAINER_STORAGE_KEY);
+            if (!raw) return false;
+
+            const data = JSON.parse(raw);
+            this.episodeCount = data.episodeCount ?? 0;
+            this.totalReward = data.totalReward ?? 0;
+            this.lastEpisodeReward = data.lastEpisodeReward ?? 0;
+            this.bestEpisodeReward = data.bestEpisodeReward ?? -Infinity;
+            if (data.agent) {
+                this.agent.setState(data.agent);
+            }
+            return true;
         } catch (e) {
-            return -Infinity;
+            return false;
         }
     }
 
-    /** Joriy best rewardni localStorage'ga yozadi */
-    saveBestReward() {
+    /** Joriy to'liq training holatini (agent + statistika) localStorage'ga yozadi */
+    saveState() {
         try {
-            localStorage.setItem(BEST_REWARD_STORAGE_KEY, String(this.bestEpisodeReward));
+            const data = {
+                episodeCount: this.episodeCount,
+                totalReward: this.totalReward,
+                lastEpisodeReward: this.lastEpisodeReward,
+                bestEpisodeReward: this.bestEpisodeReward,
+                agent: this.agent.getState()
+            };
+            localStorage.setItem(TRAINER_STORAGE_KEY, JSON.stringify(data));
         } catch (e) {
             // localStorage mavjud bo'lmasa yoki to'lib qolsa - jim o'tkazib yuboramiz
         }
@@ -207,26 +230,27 @@ class Trainer {
 
         if (done) {
             this.lastEpisodeReward = this.episodeReward;
-            if (this.episodeReward > this.bestEpisodeReward) {
-                this.bestEpisodeReward = this.episodeReward;
-                this.saveBestReward();
-            }
+            this.bestEpisodeReward = Math.max(this.bestEpisodeReward, this.episodeReward);
             this.episodeCount += 1;
             this.episodeReward = 0;
             this.currentState = this.environment.reset();
+
+            // Har episode tugaganda saqlaymiz - reload qilinsa shu joydan davom etadi
+            this.saveState();
         }
     }
 
     /** Butun training jarayonini noldan boshlaydi (agent va environment birga) */
     fullReset() {
         this.currentState = this.environment.reset();
+        this.agent.reset();
         this.episodeCount = 0;
         this.episodeReward = 0;
         this.lastEpisodeReward = 0;
         this.totalReward = 0;
         this.bestEpisodeReward = -Infinity;
         try {
-            localStorage.removeItem(BEST_REWARD_STORAGE_KEY);
+            localStorage.removeItem(TRAINER_STORAGE_KEY);
         } catch (e) {
             // e'tiborsiz qoldiramiz
         }

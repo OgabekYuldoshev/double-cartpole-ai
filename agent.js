@@ -25,22 +25,48 @@ class DQNAgent {
     constructor(stateSize = RL_CONSTANTS.STATE_SIZE, actionSize = RL_CONSTANTS.ACTION_SIZE) {
         this.stateSize = stateSize;
         this.actionSize = actionSize;
-
-        const layerSizes = [stateSize, ...RL_CONSTANTS.HIDDEN_LAYER_SIZES, actionSize];
-
-        this.qNetwork = new NeuralNetwork(layerSizes, RL_CONSTANTS.LEARNING_RATE);
-        this.targetNetwork = new NeuralNetwork(layerSizes, RL_CONSTANTS.LEARNING_RATE);
-        this.targetNetwork.copyWeightsFrom(this.qNetwork);
+        this.layerSizes = [stateSize, ...RL_CONSTANTS.HIDDEN_LAYER_SIZES, actionSize];
 
         this.replayBuffer = new ReplayBuffer(RL_CONSTANTS.REPLAY_BUFFER_CAPACITY);
+        this.gamma = RL_CONSTANTS.GAMMA;
+
+        this.reset();
+    }
+
+    /** Agentni butunlay boshlang'ich holatga qaytaradi (yangi tarmoqlar, epsilon, hisoblagichlar) */
+    reset() {
+        this.qNetwork = new NeuralNetwork(this.layerSizes, RL_CONSTANTS.LEARNING_RATE);
+        this.targetNetwork = new NeuralNetwork(this.layerSizes, RL_CONSTANTS.LEARNING_RATE);
+        this.targetNetwork.copyWeightsFrom(this.qNetwork);
 
         this.epsilon = RL_CONSTANTS.EPSILON_START;
-        this.gamma = RL_CONSTANTS.GAMMA;
 
         this.trainingStepCount = 0;   // nechta marta trainOnBatch chaqirilgani
         this.targetUpdateCount = 0;   // nechta marta target tarmoq yangilangani ("generation")
         this.isTraining = true;       // UI orqali ON/OFF qilinadi
         this.lastLoss = 0;
+    }
+
+    /** Agentning to'liq holatini (tarmoqlar + hisoblagichlar) plain objectga chiqaradi */
+    getState() {
+        return {
+            epsilon: this.epsilon,
+            trainingStepCount: this.trainingStepCount,
+            targetUpdateCount: this.targetUpdateCount,
+            isTraining: this.isTraining,
+            qNetwork: this.qNetwork.getState(),
+            targetNetwork: this.targetNetwork.getState()
+        };
+    }
+
+    /** getState() natijasidan agent holatini tiklaydi (davom ettirish uchun) */
+    setState(state) {
+        this.epsilon = state.epsilon;
+        this.trainingStepCount = state.trainingStepCount;
+        this.targetUpdateCount = state.targetUpdateCount;
+        this.isTraining = state.isTraining;
+        this.qNetwork.setState(state.qNetwork);
+        this.targetNetwork.setState(state.targetNetwork);
     }
 
     /**
