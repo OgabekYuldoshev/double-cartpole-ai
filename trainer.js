@@ -154,7 +154,9 @@ class CartPoleEnvironment {
 
 // ==================== TRAINER ====================
 
-const TRAINER_STORAGE_KEY = 'doubleCartPole_trainingState';
+// v2: state normalizatsiya kiritilgandan keyin eski (v1) saqlangan og'irliklar
+// endi mos kelmaydi (boshqa kirish masshtabiga o'rgangan) - shuning uchun key o'zgartirildi
+const TRAINER_STORAGE_KEY = 'doubleCartPole_trainingState_v2';
 
 class Trainer {
     /**

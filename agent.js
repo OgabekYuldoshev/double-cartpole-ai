@@ -83,7 +83,7 @@ class DQNAgent {
 
     /** Joriy Q-Network bo'yicha eng yaxshi (max Q qiymatli) actionni qaytaradi */
     getBestAction(state) {
-        const qValues = this.qNetwork.predict(state);
+        const qValues = this.qNetwork.predict(normalizeState(state));
         let bestAction = 0;
         let bestValue = qValues[0];
         for (let i = 1; i < qValues.length; i++) {
@@ -117,14 +117,17 @@ class DQNAgent {
         for (const experience of batch) {
             const { state, action, reward, nextState, done } = experience;
 
+            const normState = normalizeState(state);
+            const normNextState = normalizeState(nextState);
+
             // Joriy Q-Network bashorati (faqat mask orqali tanlangan action yangilanadi)
-            const currentQ = this.qNetwork.predict(state);
+            const currentQ = this.qNetwork.predict(normState);
 
             let targetValue = reward;
             if (!done) {
                 // Double DQN: keyingi actionni qNetwork tanlaydi, qiymatini targetNetwork baholaydi
                 // (bitta tarmoq ham tanlab, ham baholasa Q-qiymatlar tizimli oshirib yuboriladi)
-                const nextQValuesOnline = this.qNetwork.predict(nextState);
+                const nextQValuesOnline = this.qNetwork.predict(normNextState);
                 let bestNextAction = 0;
                 let bestNextValue = nextQValuesOnline[0];
                 for (let i = 1; i < nextQValuesOnline.length; i++) {
@@ -134,7 +137,7 @@ class DQNAgent {
                     }
                 }
 
-                const nextQValuesTarget = this.targetNetwork.predict(nextState);
+                const nextQValuesTarget = this.targetNetwork.predict(normNextState);
                 targetValue = reward + this.gamma * nextQValuesTarget[bestNextAction];
             }
 
@@ -144,7 +147,7 @@ class DQNAgent {
             const mask = new Array(this.actionSize).fill(0);
             mask[action] = 1;
 
-            inputs.push(state);
+            inputs.push(normState);
             targets.push(targetVector);
             masks.push(mask);
         }

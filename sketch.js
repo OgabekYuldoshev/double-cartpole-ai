@@ -22,7 +22,7 @@ const sketch = (p) => {
 
     // ---- UI holati ----
     let debugMode = false;
-    let simulationSpeed = 1; // har frame nechta trainer.update() chaqirilishi
+    let simulationSpeed = 20; // har frame nechta trainer.update() chaqirilishi
 
     const CANVAS_WIDTH = 900;
     const CANVAS_HEIGHT = 520;

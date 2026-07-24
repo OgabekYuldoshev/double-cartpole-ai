@@ -65,7 +65,16 @@ const RL_CONSTANTS = Object.freeze({
 
     TARGET_UPDATE_INTERVAL: 400, // necha training qadamida target tarmoq yangilanadi
 
-    MAX_STEPS_PER_EPISODE: 5000
+    MAX_STEPS_PER_EPISODE: 5000,
+
+    // State vektorini taxminan [-1, 1] oralig'iga keltirish uchun bo'luvchilar.
+    // Tarmoqqa xom (masshtabsiz) qiymatlar (pozitsiya ~2.4, tezlik cheksiz)
+    // berilsa, He initsializatsiya va gradientlar noto'g'ri masshtabda ishlaydi -
+    // bu o'rganishni sekinlashtiradi/beqarorlashtiradi.
+    STATE_NORM_POSITION: 2.4,       // CART_POSITION_LIMIT bilan bir xil
+    STATE_NORM_VELOCITY: 5.0,       // m/s, odatiy amaliy diapazon
+    STATE_NORM_ANGLE: 0.6283185307179586, // ANGLE_LIMIT_DEG (36) radianda
+    STATE_NORM_ANGULAR_VELOCITY: 10.0     // rad/s, odatiy amaliy diapazon
 });
 
 // ==================== UMUMIY MATEMATIK FUNKSIYALAR ====================
@@ -147,6 +156,19 @@ function solveLinearSystem3x3(A, b) {
     return result;
 }
 
+/** State vektorini ([x, xdot, theta1, w1, theta2, w2]) taxminan [-1,1] oralig'iga keltiradi */
+function normalizeState(state) {
+    const [x, xdot, theta1, w1, theta2, w2] = state;
+    return [
+        x / RL_CONSTANTS.STATE_NORM_POSITION,
+        xdot / RL_CONSTANTS.STATE_NORM_VELOCITY,
+        theta1 / RL_CONSTANTS.STATE_NORM_ANGLE,
+        w1 / RL_CONSTANTS.STATE_NORM_ANGULAR_VELOCITY,
+        theta2 / RL_CONSTANTS.STATE_NORM_ANGLE,
+        w2 / RL_CONSTANTS.STATE_NORM_ANGULAR_VELOCITY
+    ];
+}
+
 /** Ikki burchak orasidagi farqni [-PI, PI] oralig'iga normallashtiradi */
 function normalizeAngle(angle) {
     let a = angle % (2 * Math.PI);
@@ -168,6 +190,7 @@ if (typeof module !== 'undefined' && module.exports) {
         randomInt,
         sampleIndices,
         solveLinearSystem3x3,
-        normalizeAngle
+        normalizeAngle,
+        normalizeState
     };
 }
