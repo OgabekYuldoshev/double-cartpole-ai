@@ -40,6 +40,7 @@ const PHYSICS_CONSTANTS = Object.freeze({
 const REWARD_CONSTANTS = Object.freeze({
     ALIVE_REWARD: 1.0,          // har frame ikkala tayoq tik bo'lsa
     CENTER_BONUS: 0.1,          // ikkala tayoq markazga yaqin bo'lsa qo'shimcha bonus
+    POSITION_PENALTY: 0.05,     // markazdan uzoqlik uchun uzluksiz jarima koeffitsienti (drift'ni oldini oladi)
     FALL_PENALTY: -100.0,       // tayoqlardan biri yiqilsa
     OUT_OF_BOUNDS_PENALTY: -1.0 // aravacha chegaradan chiqsa
 });

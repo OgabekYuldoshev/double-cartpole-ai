@@ -98,7 +98,12 @@ class CartPoleEnvironment {
      * Reward funksiyasi:
      *   - Agar tayoqlardan biri yiqilsa       -> -100
      *   - Agar aravacha chegaradan chiqsa      -> -1
-     *   - Aks holda (ikkalasi tik)             -> +1, va markazga yaqin bo'lsa +0.1 qo'shiladi
+     *   - Aks holda (ikkalasi tik)             -> +1, markazdan uzoqlikka qarab uzluksiz
+     *     jarima ayiriladi, va markazga yaqin bo'lsa +0.1 qo'shiladi
+     *
+     * Uzluksiz pozitsiya jarimasi muhim: aks holda ±0.6m zonadan tashqarida
+     * (lekin ±2.4m chegara ichida) agentga hech qanday signal berilmaydi va u
+     * asta-sekin markazdan chetlashib, oxir-oqibat chegaradan chiqib ketadi.
      */
     reward(done) {
         const pole1Fallen = this.pole1.hasFallen();
@@ -114,6 +119,7 @@ class CartPoleEnvironment {
         }
 
         let totalReward = REWARD_CONSTANTS.ALIVE_REWARD;
+        totalReward -= REWARD_CONSTANTS.POSITION_PENALTY * Math.abs(this.cart.position);
 
         const bothNearCenterPosition = Math.abs(this.cart.position) < PHYSICS_CONSTANTS.CENTER_ZONE_POSITION;
         const bothPolesNearVertical =
