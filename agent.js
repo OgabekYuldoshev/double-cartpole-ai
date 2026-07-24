@@ -122,9 +122,20 @@ class DQNAgent {
 
             let targetValue = reward;
             if (!done) {
-                const nextQValues = this.targetNetwork.predict(nextState);
-                const maxNextQ = Math.max(...nextQValues);
-                targetValue = reward + this.gamma * maxNextQ;
+                // Double DQN: keyingi actionni qNetwork tanlaydi, qiymatini targetNetwork baholaydi
+                // (bitta tarmoq ham tanlab, ham baholasa Q-qiymatlar tizimli oshirib yuboriladi)
+                const nextQValuesOnline = this.qNetwork.predict(nextState);
+                let bestNextAction = 0;
+                let bestNextValue = nextQValuesOnline[0];
+                for (let i = 1; i < nextQValuesOnline.length; i++) {
+                    if (nextQValuesOnline[i] > bestNextValue) {
+                        bestNextValue = nextQValuesOnline[i];
+                        bestNextAction = i;
+                    }
+                }
+
+                const nextQValuesTarget = this.targetNetwork.predict(nextState);
+                targetValue = reward + this.gamma * nextQValuesTarget[bestNextAction];
             }
 
             const targetVector = currentQ.slice();

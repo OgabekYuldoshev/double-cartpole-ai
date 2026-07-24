@@ -56,7 +56,7 @@ const RL_CONSTANTS = Object.freeze({
 
     EPSILON_START: 1.0,
     EPSILON_MIN: 0.05,
-    EPSILON_DECAY: 0.0006,       // har o'yin qadamida chiziqli kamayish
+    EPSILON_DECAY: 0.0001,       // har o'yin qadamida chiziqli kamayish
 
     REPLAY_BUFFER_CAPACITY: 20000,
     BATCH_SIZE: 64,
@@ -64,7 +64,7 @@ const RL_CONSTANTS = Object.freeze({
 
     TARGET_UPDATE_INTERVAL: 400, // necha training qadamida target tarmoq yangilanadi
 
-    MAX_STEPS_PER_EPISODE: 2000
+    MAX_STEPS_PER_EPISODE: 5000
 });
 
 // ==================== UMUMIY MATEMATIK FUNKSIYALAR ====================

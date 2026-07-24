@@ -17,6 +17,11 @@ const ADAM_BETA1 = 0.9;
 const ADAM_BETA2 = 0.999;
 const ADAM_EPSILON = 1e-8;
 
+// Huber loss chegarasi: |xato| shu qiymatdan kichik bo'lsa kvadrat, katta bo'lsa
+// chiziqli jazolanadi - katta target sakrashlar (masalan fall penalty) gradientni
+// portlatib yubormasligi uchun
+const HUBER_DELTA = 1.0;
+
 class NeuralNetwork {
     /**
      * @param {number[]} layerSizes - masalan [6, 64, 64, 3]
@@ -161,10 +166,21 @@ class NeuralNetwork {
             const output = activations[this.numLayers];
 
             // Chiquvchi qatlam xatoligi: faqat mask=1 bo'lgan neyronlar uchun (boshqalari 0)
+            // Huber loss: kichik xatoda kvadrat (MSE kabi), katta xatoda chiziqli -
+            // outlierlar (masalan fall penalty targetlari) gradientni portlatmaydi
             let delta = output.map((value, i) => {
-                const diff = masks[n][i] * (value - targets[n][i]);
-                totalLoss += masks[n][i] * diff * diff;
-                return diff; // linear chiqish uchun dLoss/dz = dLoss/da
+                if (masks[n][i] === 0) return 0;
+
+                const diff = value - targets[n][i];
+                const absDiff = Math.abs(diff);
+
+                if (absDiff <= HUBER_DELTA) {
+                    totalLoss += 0.5 * diff * diff;
+                    return diff;
+                }
+
+                totalLoss += HUBER_DELTA * (absDiff - 0.5 * HUBER_DELTA);
+                return HUBER_DELTA * Math.sign(diff);
             });
 
             // Backpropagation: chiquvchi qatlamdan kiruvchi qatlamga tomon
